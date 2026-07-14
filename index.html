@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-    <title>Puntuación DOS</title>
+    <title>Puntuación DOS - Menos puntos gana</title>
     <style>
         * {
             box-sizing: border-box;
@@ -361,9 +361,15 @@
             padding: 10px 8px;
             font-size: 1.1rem;
         }
+        /* El ganador es el que tiene MENOS puntos */
         .final-table tr:first-child {
             background: #ffd700;
             font-weight: 700;
+        }
+        /* El perdedor es el que tiene MÁS puntos */
+        .final-table tr:last-child {
+            background: #f8d7da;
+            color: #721c24;
         }
 
         @media (max-width: 480px) {
@@ -400,13 +406,14 @@
 
     <div id="setup" class="screen">
         <h1>🎯 Puntuación DOS</h1>
+        <p style="text-align:center; color:#28a745; font-weight:600; margin-bottom:12px;">🏆 ¡Gana quien tenga MENOS puntos!</p>
         <label for="numPlayers">Número de jugadores (máx. 4):</label>
         <select id="numPlayers">
             <option value="2">2</option>
             <option value="3" selected>3</option>
             <option value="4">4</option>
         </select>
-        <label for="puntuacionFinal">Puntuación final:</label>
+        <label for="puntuacionFinal">Puntuación final (al alcanzarla, termina):</label>
         <input type="number" id="puntuacionFinal" value="200" min="50" step="10">
         <div id="namesContainer"></div>
         <button id="startGame" class="success" style="margin-top:14px; width:100%;">▶ Empezar partida</button>
@@ -414,13 +421,14 @@
 
     <div id="game" class="screen" style="display:none;">
         <h2>📊 Puntuaciones</h2>
+        <p style="text-align:center; color:#28a745; font-weight:500; margin-bottom:8px;">🏆 Gana quien tenga MENOS puntos al final</p>
         <div class="table-wrap">
             <table id="scoreTable">
                 <thead>
                     <tr>
                         <th>Jugador</th>
                         <th>Puntos</th>
-                        <th>Ganador</th>
+                        <th>Ganador ronda</th>
                     </tr>
                 </thead>
                 <tbody id="scoreBody"></tbody>
@@ -449,6 +457,7 @@
     <div id="finalPanel" class="modal" style="display:none;">
         <div class="modal-content">
             <h2>🏆 ¡Partida finalizada!</h2>
+            <p style="text-align:center; color:#28a745; font-weight:600; margin-bottom:12px;">🎯 ¡Gana quien tenga MENOS puntos!</p>
             <div id="finalResult"></div>
             <button id="resetGame" class="warning" style="width:100%; margin-top:16px;">🔄 Reiniciar partida</button>
         </div>
@@ -512,20 +521,27 @@
             scoreButton.disabled = true;
             undoButton.disabled = true;
 
+            // Ordenar de MENOR a MAYOR (el que menos puntos tiene es el ganador)
             var sorted = players.slice().sort(function(a, b) {
-                return b.puntos - a.puntos;
+                return a.puntos - b.puntos;
             });
+
             var html = '<div class="table-wrap"><table class="final-table"><thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead><tbody>';
             for (var i = 0; i < sorted.length; i++) {
                 var p = sorted[i];
-                var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : (i+1) + '.';
+                var medal = '';
+                if (i === 0) medal = '🥇 (¡GANADOR!)';
+                else if (i === 1) medal = '🥈';
+                else if (i === 2) medal = '🥉';
+                else medal = (i+1) + '.';
                 html += '<tr><td>' + medal + '</td><td>' + p.nombre + '</td><td>' + p.puntos + '</td></tr>';
             }
             html += '</tbody></table></div>';
-            html += '<p style="text-align:center; font-weight:500;">🎯 Puntuación final: ' + puntuacionFinal + ' puntos</p>';
+            html += '<p style="text-align:center; font-weight:500; color:#28a745;">🎯 Puntuación final: ' + puntuacionFinal + ' puntos</p>';
+            html += '<p style="text-align:center; font-weight:500; color:#1a2634;">🏆 ¡El ganador es quien tiene <span style="color:#28a745; font-weight:700;">MENOS</span> puntos!</p>';
             finalResult.innerHTML = html;
             finalPanel.style.display = 'flex';
-            statusMessage.textContent = '🏁 ¡Partida finalizada!';
+            statusMessage.textContent = '🏁 ¡Partida finalizada! Revisa la tabla.';
         }
 
         function renderGame() {
@@ -666,7 +682,7 @@
             scoreButton.disabled = false;
             undoButton.disabled = false;
             renderGame();
-            statusMessage.textContent = '🎮 ¡Partida iniciada!';
+            statusMessage.textContent = '🎮 ¡Partida iniciada! Gana quien tenga MENOS puntos.';
         });
 
         newRoundBtn.addEventListener('click', function() {
