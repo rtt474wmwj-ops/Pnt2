@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Puntuación DOS</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #f0f2f5;
+            padding: 12px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 18px;
+            color: #1a2634;
+        }
+        .screen {
+            max-width: 700px;
+            width: 100%;
+            margin: 0 auto;
+            background: #ffffff;
+            padding: 20px 16px;
+            border-radius: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        }
+        h1, h2, h3 {
+            text-align: center;
+            margin-bottom: 16px;
+            font-weight: 600;
+        }
+        h1 { font-size: 2rem; }
+        h2 { font-size: 1.6rem; }
+        h3 { font-size: 1.3rem; }
+        label {
+            display: block;
+            font-weight: 500;
+            margin: 14px 0 6px;
+            color: #2d3e50;
+            font-size: 1.1rem;
+        }
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            border: 1px solid #d0d7de;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            background: #fafbfc;
+            transition: border 0.2s;
+        }
+        select:focus, input:focus {
+            border-color: #007bff;
+            outline: none;
+            background: #ffffff;
+        }
+        #namesContainer input {
+            margin-bottom: 8px;
+        }
+        button {
+            padding: 14px 20px;
+            margin: 6px 4px;
+            border: none;
+            border-radius: 14px;
+            background: #007bff;
+            color: #ffffff;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, transform 0.1s;
+            min-height: 54px;
+            min-width: 48px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        button:active { transform: scale(0.95); }
+        button.secondary { background: #6c757d; }
+        button.secondary:active { background: #5a6268; }
+        button.success { background: #28a745; }
+        button.success:active { background: #218838; }
+        button.danger { background: #dc3545; }
+        button.danger:active { background: #c82333; }
+        button.warning { background: #ffc107; color: #212529; }
+        button.warning:active { background: #e0a800; }
+        button:disabled {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        #gameButtons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin: 18px 0 10px;
+        }
+        #gameButtons button {
+            flex: 1 1 120px;
+            min-width: 100px;
+        }
+        .table-wrap {
+            overflow-x: auto;
+            margin: 12px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.1rem;
+            min-width: 300px;
+        }
+        th, td {
+            padding: 10px 4px;
+            text-align: center;
+            border-bottom: 1px solid #e9ecef;
+            vertical-align: middle;
+        }
+        th {
+            background: #f1f3f5;
+            font-weight: 600;
+            color: #1a2634;
+        }
+        th:first-child, td:first-child {
+            min-width: 80px;
+            max-width: 120px;
+            word-break: break-word;
+        }
+        th:last-child, td:last-child {
+            min-width: 70px;
+            max-width: 80px;
+        }
+        tr.winner {
+            background: #d4edda;
+        }
+        tr.winner td:first-child::before {
+            content: "👑 ";
+            font-size: 1.3rem;
+        }
+        .winner-btn {
+            background: transparent;
+            border: 1px solid #ced4da;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 1.8rem;
+            min-height: 44px;
+            min-width: 44px;
+            cursor: pointer;
+            transition: background 0.1s;
+            background: #f8f9fa;
+        }
+        .winner-btn.active {
+            background: #ffd700;
+            border-color: #ffb300;
+            box-shadow: 0 0 0 2px #ffb300;
+        }
+        .winner-btn:active { transform: scale(0.92); }
+
+        #statusMessage {
+            text-align: center;
+            margin: 14px 0 4px;
+            font-weight: 500;
+            color: #2d3e50;
+            font-size: 1rem;
+            min-height: 2.2em;
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 12px;
+        }
+
+        .puntos-historial {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            overflow-y: hidden;
+            gap: 6px;
+            padding: 4px 2px;
+            max-width: 220px;
+            margin: 0 auto;
+            justify-content: flex-start;
+        }
+        .puntos-historial::-webkit-scrollbar {
+            height: 3px;
+        }
+        .puntos-historial::-webkit-scrollbar-thumb {
+            background: #c1c7cd;
+            border-radius: 4px;
+        }
+        .puntos-historial .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            white-space: nowrap;
+            font-size: 0.85rem;
+            background: #f1f3f5;
+            padding: 2px 6px;
+            border-radius: 6px;
+            min-width: 28px;
+            flex-shrink: 0;
+        }
+        .puntos-historial .item .total {
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        .puntos-historial .item .inc {
+            font-size: 0.6rem;
+            font-weight: 600;
+            margin-top: -2px;
+        }
+        .puntos-historial .item .inc.positivo {
+            color: #28a745;
+        }
+        .puntos-historial .item .inc.cero {
+            color: #6c757d;
+        }
+        .puntos-historial .item .inc.negativo {
+            color: #dc3545;
+        }
+        .puntos-historial .item:last-child {
+            background: #e2e6ea;
+            font-weight: 700;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 12px;
+        }
+        .modal-content {
+            background: white;
+            padding: 20px 16px;
+            border-radius: 24px;
+            max-width: 550px;
+            width: 100%;
+            max-height: 95vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .close {
+            position: absolute;
+            top: 8px;
+            right: 16px;
+            font-size: 36px;
+            line-height: 1;
+            cursor: pointer;
+            color: #6c757d;
+            background: none;
+            border: none;
+            padding: 0 8px;
+            min-height: auto;
+            box-shadow: none;
+        }
+        .close:active { color: #1a2634; }
+
+        .score-input-group {
+            margin-bottom: 24px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .score-input-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .score-input-group label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-bottom: 4px;
+        }
+        .score-input-group input[type="number"] {
+            width: 120px;
+            display: inline-block;
+            margin-right: 8px;
+            font-size: 1.2rem;
+            padding: 12px;
+        }
+        .cartas-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .carta-btn {
+            background: white;
+            border: 1px solid #ced4da;
+            border-radius: 12px;
+            padding: 10px 14px;
+            font-size: 1.4rem;
+            font-weight: 600;
+            min-width: 52px;
+            min-height: 52px;
+            cursor: pointer;
+            transition: background 0.1s, transform 0.1s;
+            background: #fafbfc;
+            position: relative;
+            user-select: none;
+        }
+        .carta-btn:active {
+            transform: scale(0.90);
+            background: #e2e6ea;
+        }
+        .carta-btn .subvalor {
+            display: block;
+            font-size: 0.65rem;
+            font-weight: 400;
+            color: #6c757d;
+            margin-top: -4px;
+        }
+        .carta-btn .flotante {
+            position: absolute;
+            top: -28px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #28a745;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s, top 0.2s;
+        }
+        .carta-btn .flotante.mostrar {
+            opacity: 1;
+            top: -38px;
+        }
+        .carta-btn .flotante.restar {
+            background: #dc3545;
+        }
+
+        .modal-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 24px;
+            justify-content: flex-end;
+        }
+        .modal-actions button {
+            flex: 1 1 120px;
+            min-width: 100px;
+        }
+
+        .final-table {
+            margin: 16px 0;
+        }
+        .final-table th, .final-table td {
+            padding: 10px 8px;
+            font-size: 1.1rem;
+        }
+        .final-table tr:first-child {
+            background: #ffd700;
+            font-weight: 700;
+        }
+        .final-table tr:last-child {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 8px; font-size: 16px; }
+            .screen { padding: 16px 12px; }
+            h1 { font-size: 1.6rem; }
+            h2 { font-size: 1.4rem; }
+            h3 { font-size: 1.2rem; }
+            button { font-size: 1rem; padding: 12px 14px; min-height: 48px; }
+            select, input[type="text"], input[type="number"] { font-size: 1rem; padding: 12px; }
+            .carta-btn { font-size: 1.2rem; min-width: 44px; min-height: 44px; padding: 6px 10px; }
+            .carta-btn .subvalor { font-size: 0.55rem; }
+            .winner-btn { font-size: 1.5rem; min-height: 40px; min-width: 40px; padding: 4px 8px; }
+            table { font-size: 1rem; }
+            th, td { padding: 8px 2px; }
+            .modal-content { padding: 16px 12px; }
+            .score-input-group input[type="number"] { width: 100px; font-size: 1rem; }
+            .puntos-historial { max-width: 150px; gap: 4px; }
+            .puntos-historial .item { font-size: 0.75rem; padding: 2px 4px; min-width: 24px; }
+            .puntos-historial .item .total { font-size: 0.9rem; }
+            .puntos-historial .item .inc { font-size: 0.55rem; }
+        }
+        @media (max-width: 380px) {
+            #gameButtons button { flex: 1 1 80px; min-width: 70px; font-size: 0.9rem; }
+            .cartas-container { gap: 4px; }
+            .carta-btn { font-size: 1rem; min-width: 38px; min-height: 38px; padding: 4px 6px; }
+            .puntos-historial { max-width: 120px; }
+            .puntos-historial .item { font-size: 0.7rem; padding: 1px 3px; min-width: 20px; }
+            .puntos-historial .item .total { font-size: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="setup" class="screen">
+        <h1>🎯 Puntuación DOS</h1>
+        <label for="numPlayers">Número de jugadores (máx. 4):</label>
+        <select id="numPlayers">
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+        </select>
+        <label for="puntuacionFinal">Puntuación final (al alcanzarla, termina):</label>
+        <input type="number" id="puntuacionFinal" value="200" min="50" step="10">
+        <div id="namesContainer"></div>
+        <button id="startGame" class="success" style="margin-top:14px; width:100%;">▶ Empezar partida</button>
+    </div>
+
+    <div id="game" class="screen" style="display:none;">
+        <h2>📊 Puntuaciones</h2>
+        <div class="table-wrap">
+            <table id="scoreTable">
+                <thead>
+                    <tr>
+                        <th>Jugador</th>
+                        <th>Puntos</th>
+                        <th>Ganador ronda</th>
+                    </tr>
+                </thead>
+                <tbody id="scoreBody"></tbody>
+            </table>
+        </div>
+        <div id="gameButtons">
+            <button id="newRound" class="secondary">🔄 Nueva Ronda</button>
+            <button id="scoreButton" class="success">➕ Puntuar</button>
+            <button id="undoButton" class="danger">↩ Deshacer</button>
+            <button id="resetScoresBtn" class="warning">🔄 Resetear Puntos</button>
+            <button id="restartGameBtn" class="secondary">🏠 Reiniciar Partida</button>
+        </div>
+        <div id="statusMessage">🎮 ¡Partida iniciada!</div>
+    </div>
+
+    <div id="scorePanel" class="modal" style="display:none;">
+        <div class="modal-content">
+            <button class="close" id="closeModalBtn">&times;</button>
+            <h3>✏️ Puntuar ronda</h3>
+            <div id="scoreInputs"></div>
+            <div class="modal-actions">
+                <button id="cancelScore" class="secondary">Cancelar</button>
+                <button id="applyScore" class="success">✔ Aceptar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="finalPanel" class="modal" style="display:none;">
+        <div class="modal-content">
+            <h2>🏆 ¡Partida finalizada!</h2>
+            <div id="finalResult"></div>
+            <button id="resetGame" class="warning" style="width:100%; margin-top:16px;">🔄 Reiniciar partida</button>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        "use strict";
+
+        // ============================================================
+        //  ESTADO
+        // ============================================================
+        var players = [];
+        var currentWinner = null;
+        var history = [];
+        var gameFinished = false;
+        var puntuacionFinal = 200;
+
+        // ============================================================
+        //  DOM REFERENCIAS
+        // ============================================================
+        var setupScreen = document.getElementById('setup');
+        var gameScreen = document.getElementById('game');
+        var numPlayersSelect = document.getElementById('numPlayers');
+        var puntuacionFinalInput = document.getElementById('puntuacionFinal');
+        var namesContainer = document.getElementById('namesContainer');
+        var startGameBtn = document.getElementById('startGame');
+        var scoreBody = document.getElementById('scoreBody');
+        var newRoundBtn = document.getElementById('newRound');
+        var scoreButton = document.getElementById('scoreButton');
+        var undoButton = document.getElementById('undoButton');
+        var resetScoresBtn = document.getElementById('resetScoresBtn');
+        var restartGameBtn = document.getElementById('restartGameBtn');
+        var statusMessage = document.getElementById('statusMessage');
+        var scorePanel = document.getElementById('scorePanel');
+        var scoreInputs = document.getElementById('scoreInputs');
+        var applyScoreBtn = document.getElementById('applyScore');
+        var cancelScoreBtn = document.getElementById('cancelScore');
+        var closeModalBtn = document.getElementById('closeModalBtn');
+        var finalPanel = document.getElementById('finalPanel');
+        var finalResult = document.getElementById('finalResult');
+        var resetGameBtn = document.getElementById('resetGame');
+
+        // ============================================================
+        //  GUARDAR / CARGAR ESTADO (localStorage)
+        // ============================================================
+        function saveState() {
+            var state = {
+                players: players,
+                currentWinner: currentWinner,
+                history: history,
+                gameFinished: gameFinished,
+                puntuacionFinal: puntuacionFinal,
+                gameStarted: (setupScreen.style.display === 'none')
+            };
+            try {
+                localStorage.setItem('puntuacionDosState', JSON.stringify(state));
+            } catch(e) {}
+        }
+
+        function loadState() {
+            try {
+                var raw = localStorage.getItem('puntuacionDosState');
+                if (!raw) return false;
+                var state = JSON.parse(raw);
+                if (!state.players || state.players.length === 0) return false;
+
+                players = state.players;
+                currentWinner = state.currentWinner;
+                history = state.history || [];
+                gameFinished = state.gameFinished || false;
+                puntuacionFinal = state.puntuacionFinal || 200;
+
+                if (state.gameStarted) {
+                    setupScreen.style.display = 'none';
+                    gameScreen.style.display = 'block';
+                    renderGame();
+                    updateStatus();
+                    return true;
+                }
+                return false;
+            } catch(e) {
+                return false;
+            }
+        }
+
+        function clearState() {
+            localStorage.removeItem('puntuacionDosState');
+        }
+
+        // ============================================================
+        //  FUNCIONES AUXILIARES
+        // ============================================================
+        function updateStatus() {
+            if (gameFinished) {
+                statusMessage.textContent = '⛔ Partida finalizada. Reinicia para jugar de nuevo.';
+                return;
+            }
+            if (currentWinner !== null && players[currentWinner]) {
+                statusMessage.textContent = '👑 Ganador de la ronda: ' + players[currentWinner].nombre;
+            } else {
+                statusMessage.textContent = '⚪ Sin ganador seleccionado.';
+            }
+        }
+
+        function checkGameEnd() {
+            if (gameFinished) return true;
+            for (var i = 0; i < players.length; i++) {
+                if (players[i].puntos >= puntuacionFinal) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function showFinalPanel() {
+            gameFinished = true;
+            newRoundBtn.disabled = true;
+            scoreButton.disabled = true;
+            undoButton.disabled = true;
+            resetScoresBtn.disabled = true;
+
+            var sorted = players.slice().sort(function(a, b) {
+                return a.puntos - b.puntos;
+            });
+
+            var html = '<div class="table-wrap"><table class="final-table"><thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead><tbody>';
+            for (var i = 0; i < sorted.length; i++) {
+                var p = sorted[i];
+                var medal = '';
+                if (i === 0) medal = '🥇 (¡GANADOR!)';
+                else if (i === 1) medal = '🥈';
+                else if (i === 2) medal = '🥉';
+                else medal = (i+1) + '.';
+                html += '<tr><td>' + medal + '</td><td>' + p.nombre + '</td><td>' + p.puntos + '</td></tr>';
+            }
+            html += '</tbody></table></div>';
+            html += '<p style="text-align:center; font-weight:500;">🎯 Puntuación final: ' + puntuacionFinal + ' puntos</p>';
+            finalResult.innerHTML = html;
+            finalPanel.style.display = 'flex';
+            statusMessage.textContent = '🏁 ¡Partida finalizada! Revisa la tabla.';
+            saveState();
+        }
+
+        function renderGame() {
+            var tbody = scoreBody;
+            tbody.innerHTML = '';
+            for (var i = 0; i < players.length; i++) {
+                var p = players[i];
+                var tr = document.createElement('tr');
+                if (currentWinner === i) tr.classList.add('winner');
+
+                var tdName = document.createElement('td');
+                tdName.textContent = p.nombre;
+
+                var tdPuntos = document.createElement('td');
+                var contenedorHistorial = document.createElement('div');
+                contenedorHistorial.className = 'puntos-historial';
+
+                if (!p.historialPuntos || p.historialPuntos.length === 0) {
+                    var item = document.createElement('div');
+                    item.className = 'item';
+                    item.innerHTML = '<span class="total">0</span>';
+                    contenedorHistorial.appendChild(item);
+                } else {
+                    for (var j = 0; j < p.historialPuntos.length; j++) {
+                        var total = p.historialPuntos[j];
+                        var item2 = document.createElement('div');
+                        item2.className = 'item';
+                        var inc = 0;
+                        if (j === 0) {
+                            inc = total;
+                        } else {
+                            inc = total - p.historialPuntos[j-1];
+                        }
+                        var incClass = '';
+                        var incText = '';
+                        if (inc > 0) {
+                            incClass = 'positivo';
+                            incText = '+' + inc;
+                        } else if (inc === 0) {
+                            incClass = 'cero';
+                            incText = '+0';
+                        } else {
+                            incClass = 'negativo';
+                            incText = inc.toString();
+                        }
+                        item2.innerHTML = '<span class="total">' + total + '</span><span class="inc ' + incClass + '">' + incText + '</span>';
+                        contenedorHistorial.appendChild(item2);
+                    }
+                }
+                tdPuntos.appendChild(contenedorHistorial);
+
+                var tdWinner = document.createElement('td');
+                var winnerBtn = document.createElement('button');
+                winnerBtn.className = 'winner-btn';
+                winnerBtn.textContent = currentWinner === i ? '👑' : '⬜';
+                if (currentWinner === i) winnerBtn.classList.add('active');
+                winnerBtn.disabled = gameFinished;
+                winnerBtn.addEventListener('click', (function(idx) {
+                    return function(e) {
+                        e.stopPropagation();
+                        if (!gameFinished) toggleWinner(idx);
+                    };
+                })(i));
+                tdWinner.appendChild(winnerBtn);
+
+                tr.appendChild(tdName);
+                tr.appendChild(tdPuntos);
+                tr.appendChild(tdWinner);
+                tbody.appendChild(tr);
+            }
+            updateStatus();
+            saveState();
+        }
+
+        function toggleWinner(index) {
+            if (gameFinished) return;
+            if (currentWinner === index) {
+                currentWinner = null;
+            } else {
+                currentWinner = index;
+            }
+            renderGame();
+        }
+
+        // ============================================================
+        //  SETUP
+        // ============================================================
+        function setupNames() {
+            var num = parseInt(numPlayersSelect.value);
+            namesContainer.innerHTML = '';
+            for (var i = 0; i < num; i++) {
+                var input = document.createElement('input');
+                input.type = 'text';
+                input.placeholder = 'Nombre del jugador ' + (i + 1);
+                input.id = 'name-' + i;
+                input.autocomplete = 'off';
+                namesContainer.appendChild(input);
+            }
+        }
+        numPlayersSelect.addEventListener('change', setupNames);
+        setupNames();
+
+        startGameBtn.addEventListener('click', function() {
+            var inputs = namesContainer.querySelectorAll('input');
+            var names = [];
+            var valid = true;
+            for (var i = 0; i < inputs.length; i++) {
+                var val = inputs[i].value.trim();
+                if (val === '') {
+                    valid = false;
+                    inputs[i].style.borderColor = 'red';
+                } else {
+                    inputs[i].style.borderColor = '';
+                    names.push(val);
+                }
+            }
+            if (!valid) {
+                alert('Por favor, introduce todos los nombres.');
+                return;
+            }
+            var final = parseInt(puntuacionFinalInput.value);
+            if (isNaN(final) || final < 10) {
+                alert('Introduce una puntuación final válida (mínimo 10).');
+                return;
+            }
+            puntuacionFinal = final;
+
+            players = [];
+            for (var j = 0; j < names.length; j++) {
+                players.push({
+                    nombre: names[j],
+                    puntos: 0,
+                    historialPuntos: []
+                });
+            }
+            currentWinner = null;
+            history = [];
+            gameFinished = false;
+            setupScreen.style.display = 'none';
+            gameScreen.style.display = 'block';
+            newRoundBtn.disabled = false;
+            scoreButton.disabled = false;
+            undoButton.disabled = false;
+            resetScoresBtn.disabled = false;
+            renderGame();
+            statusMessage.textContent = '🎮 ¡Partida iniciada!';
+            saveState();
+        });
+
+        // ============================================================
+        //  NUEVA RONDA
+        // ============================================================
+        newRoundBtn.addEventListener('click', function() {
+            if (gameFinished) return;
+            currentWinner = null;
+            renderGame();
+            statusMessage.textContent = '🔄 Nueva ronda. Selecciona un ganador y puntúa.';
+        });
+
+        // ============================================================
+        //  ABRIR PANEL DE PUNTUACIÓN
+        // ============================================================
+        function openScorePanel() {
+            if (gameFinished) return;
+            var toScore = [];
+            for (var i = 0; i < players.length; i++) {
+                if (i !== currentWinner) {
+                    toScore.push({ nombre: players[i].nombre, index: i });
+                }
+            }
+
+            if (toScore.length === 0) {
+                alert('No hay jugadores para puntuar.');
+                return;
+            }
+
+            scoreInputs.innerHTML = '';
+            for (var j = 0; j < toScore.length; j++) {
+                var p = toScore[j];
+                var group = document.createElement('div');
+                group.className = 'score-input-group';
+
+                var label = document.createElement('label');
+                label.textContent = p.nombre;
+
+                var input = document.createElement('input');
+                input.type = 'number';
+                input.min = 0;
+                input.value = 0;
+                input.id = 'score-' + p.index;
+                input.inputMode = 'numeric';
+                input.autocomplete = 'off';
+
+                var cartasContainer = document.createElement('div');
+                cartasContainer.className = 'cartas-container';
+
+                var cartas = [1, 3, 4, 5, 6, 7, 8, 9, 10, '2', '#'];
+                for (var k = 0; k < cartas.length; k++) {
+                    var c = cartas[k];
+                    var btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'carta-btn';
+                    var valor, etiqueta;
+                    if (c === '2') {
+                        valor = 20;
+                        etiqueta = '2';
+                    } else if (c === '#') {
+                        valor = 40;
+                        etiqueta = '#';
+                    } else {
+                        valor = c;
+                        etiqueta = c.toString();
+                    }
+                    btn.innerHTML = etiqueta + ' <span class="subvalor">' + valor + '</span>';
+                    btn.dataset.valor = valor;
+
+                    var flotante = document.createElement('span');
+                    flotante.className = 'flotante';
+                    flotante.textContent = '+' + valor;
+                    btn.appendChild(flotante);
+
+                    var timeoutId = null;
+                    var isLongPress = false;
+
+                    (function(btn, input, valor, flotante) {
+                        btn.addEventListener('pointerdown', function(e) {
+                            e.preventDefault();
+                            isLongPress = false;
+                            timeoutId = setTimeout(function() {
+                                isLongPress = true;
+                                var current = parseInt(input.value) || 0;
+                                current -= valor;
+                                if (current < 0) current = 0;
+                                input.value = current;
+                                flotante.textContent = '-' + valor;
+                                flotante.className = 'flotante mostrar restar';
+                                setTimeout(function() {
+                                    flotante.className = 'flotante';
+                                }, 600);
+                            }, 500);
+                        });
+
+                        btn.addEventListener('pointerup', function(e) {
+                            e.preventDefault();
+                            clearTimeout(timeoutId);
+                            if (!isLongPress) {
+                                var current = parseInt(input.value) || 0;
+                                current += valor;
+                                input.value = current;
+                                flotante.textContent = '+' + valor;
+                                flotante.className = 'flotante mostrar';
+                                setTimeout(function() {
+                                    flotante.className = 'flotante';
+                                }, 600);
+                            }
+                            isLongPress = false;
+                        });
+
+                        btn.addEventListener('pointercancel', function() {
+                            clearTimeout(timeoutId);
+                            isLongPress = false;
+                        });
+                    })(btn, input, valor, flotante);
+
+                    cartasContainer.appendChild(btn);
+                }
+
+                group.appendChild(label);
+                group.appendChild(input);
+                group.appendChild(cartasContainer);
+                scoreInputs.appendChild(group);
+            }
+
+            scorePanel.style.display = 'flex';
+            var firstInput = scoreInputs.querySelector('input[type="number"]');
+            if (firstInput) setTimeout(function() { firstInput.focus(); }, 100);
+        }
+
+        function closeScorePanel() {
+            scorePanel.style.display = 'none';
+        }
+
+        scoreButton.addEventListener('click', openScorePanel);
+
+        // ============================================================
+        //  APLICAR PUNTUACIÓN
+        // ============================================================
+        applyScoreBtn.addEventListener('click', function() {
+            if (gameFinished) {
+                closeScorePanel();
+                return;
+            }
+            var inputs = scoreInputs.querySelectorAll('input[type="number"]');
+            var pointsAdded = [];
+            for (var i = 0; i < players.length; i++) pointsAdded[i] = 0;
+
+            for (var j = 0; j < inputs.length; j++) {
+                var idx = parseInt(inputs[j].id.split('-')[1]);
+                var val = parseInt(inputs[j].value) || 0;
+                if (val < 0) {
+                    alert('Los puntos no pueden ser negativos.');
+                    return;
+                }
+                pointsAdded[idx] = val;
+            }
+
+            var realAdded = [];
+            for (var k = 0; k < pointsAdded.length; k++) {
+                realAdded[k] = (currentWinner === k) ? 0 : pointsAdded[k];
+            }
+
+            for (var m = 0; m < realAdded.length; m++) {
+                players[m].puntos += realAdded[m];
+                players[m].historialPuntos.push(players[m].puntos);
+            }
+
+            history.push({
+                pointsAdded: realAdded.slice(),
+                winner: currentWinner
+            });
+
+            closeScorePanel();
+            renderGame();
+
+            if (checkGameEnd()) {
+                showFinalPanel();
+            } else {
+                statusMessage.textContent = '✅ Puntuación aplicada.';
+            }
+            saveState();
+        });
+
+        // ============================================================
+        //  CERRAR MODAL
+        // ============================================================
+        cancelScoreBtn.addEventListener('click', closeScorePanel);
+        closeModalBtn.addEventListener('click', closeScorePanel);
+        scorePanel.addEventListener('click', function(e) {
+            if (e.target === scorePanel) closeScorePanel();
+        });
+
+        // ============================================================
+        //  DESHACER
+        // ============================================================
+        undoButton.addEventListener('click', function() {
+            if (gameFinished) return;
+            if (history.length === 0) {
+                alert('No hay rondas para deshacer.');
+                return;
+            }
+            var last = history.pop();
+            for (var i = 0; i < last.pointsAdded.length; i++) {
+                players[i].puntos -= last.pointsAdded[i];
+                if (players[i].puntos < 0) players[i].puntos = 0;
+                if (players[i].historialPuntos.length > 0) {
+                    players[i].historialPuntos.pop();
+                }
+            }
+            if (history.length > 0) {
+                currentWinner = history[history.length - 1].winner;
+            } else {
+                currentWinner = null;
+            }
+            renderGame();
+            statusMessage.textContent = '↩ Última ronda deshecha.';
+            saveState();
+        });
+
+        // ============================================================
+        //  RESETEAR PUNTUACIONES (mantiene jugadores)
+        // ============================================================
+        resetScoresBtn.addEventListener('click', function() {
+            if (gameFinished) {
+                // Si ya terminó, también permitimos resetear para seguir jugando
+                // pero primero confirmamos
+                if (!confirm('¿Resetear todas las puntuaciones a 0 y continuar?')) return;
+                // Quitamos el estado de finalizado
+                gameFinished = false;
+                finalPanel.style.display = 'none';
+                newRoundBtn.disabled = false;
+                scoreButton.disabled = false;
+                undoButton.disabled = false;
+                resetScoresBtn.disabled = false;
+            } else {
+                if (!confirm('¿Resetear todas las puntuaciones a 0? Se perderá el historial.')) return;
+            }
+            // Resetear puntos e historial
+            for (var i = 0; i < players.length; i++) {
+                players[i].puntos = 0;
+                players[i].historialPuntos = [];
+            }
+            currentWinner = null;
+            history = [];
+            gameFinished = false;
+            renderGame();
+            statusMessage.textContent = '🔄 Puntuaciones reseteadas a 0.';
+            saveState();
+        });
+
+        // ============================================================
+        //  REINICIAR PARTIDA (vuelve a setup)
+        // ============================================================
+        function restartGame() {
+            if (!confirm('¿Reiniciar partida? Se perderán todos los datos.')) return;
+            clearState();
+            setupScreen.style.display = 'block';
+            gameScreen.style.display = 'none';
+            finalPanel.style.display = 'none';
+            players = [];
+            currentWinner = null;
+            history = [];
+            gameFinished = false;
+            // Resetear inputs de setup a valores por defecto
+            numPlayersSelect.value = '3';
+            puntuacionFinalInput.value = '200';
+            setupNames();
+            statusMessage.textContent = '';
+            // Habilitar botones (por si acaso)
+            newRoundBtn.disabled = false;
+            scoreButton.disabled = false;
+            undoButton.disabled = false;
+            resetScoresBtn.disabled = false;
+        }
+
+        restartGameBtn.addEventListener('click', restartGame);
+        resetGameBtn.addEventListener('click', restartGame);
+
+        // ============================================================
+        //  CARGAR ESTADO AL INICIAR
+        // ============================================================
+        if (!loadState()) {
+            // No hay estado guardado, mostramos setup
+            setupScreen.style.display = 'block';
+            gameScreen.style.display = 'none';
+        }
+
+    })();
+    </script>
+
+</body>
+</html>
