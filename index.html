@@ -156,6 +156,7 @@
             top: 0;
             z-index: 2;
         }
+        /* Columna fija: Jugador */
         .puntos-table th:first-child,
         .puntos-table td:first-child {
             position: sticky;
@@ -171,6 +172,7 @@
             background: #f1f3f5;
             z-index: 4;
         }
+        /* Columna fija: Ganador */
         .puntos-table th:last-child,
         .puntos-table td:last-child {
             position: sticky;
@@ -431,7 +433,7 @@
 
     <!-- Pie de página con versión y copyright -->
     <div class="footer-info">
-        <span class="version">v.0.2.1</span>
+        <span class="version">v.0.2.2</span>
         <span class="copyright">© 2026 · Todos los derechos reservados</span>
     </div>
 
@@ -630,7 +632,7 @@
         }
 
         // ============================================================
-        //  RENDERIZAR TABLA DE PUNTUACIONES POR RONDAS (SOLO ÚLTIMAS 3)
+        //  RENDERIZAR TABLA DE PUNTUACIONES POR RONDAS (TODAS)
         // ============================================================
         function renderGame() {
             // Determinar número total de rondas
@@ -641,13 +643,9 @@
                 }
             }
 
-            // Mostrar solo las últimas 3 rondas (o todas si son menos)
-            const rondasVisibles = Math.min(maxRondas, 3);
-            const startRonda = maxRondas - rondasVisibles;
-
-            // Construir cabecera
+            // Construir cabecera con todas las rondas
             let theadHTML = '<tr><th>Jugador</th>';
-            for (let r = startRonda; r < maxRondas; r++) {
+            for (let r = 0; r < maxRondas; r++) {
                 theadHTML += `<th>Ronda ${r+1}</th>`;
             }
             theadHTML += '<th>Ganador</th></tr>';
@@ -661,8 +659,7 @@
                 let rowClass = isWinner ? 'winner' : '';
                 tbodyHTML += `<tr class="${rowClass}"><td>${p.nombre}</td>`;
                 const historial = p.historialPuntos || [];
-                // Mostrar solo las rondas visibles
-                for (let r = startRonda; r < maxRondas; r++) {
+                for (let r = 0; r < maxRondas; r++) {
                     if (r < historial.length) {
                         const total = historial[r];
                         let inc = 0;
@@ -695,8 +692,8 @@
                 });
             });
 
-            // Scroll al final (última columna)
-            if (tableWrap && rondasVisibles > 0) {
+            // Scroll al final (última columna) si hay rondas
+            if (tableWrap && maxRondas > 0) {
                 setTimeout(() => {
                     tableWrap.scrollLeft = tableWrap.scrollWidth;
                 }, 50);
