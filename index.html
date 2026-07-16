@@ -944,17 +944,23 @@
         scoreButton.addEventListener('click', openScorePanel);
 
         // ============================================================
-        //  APLICAR PUNTUACIÓN
+        //  APLICAR PUNTUACIÓN (CORREGIDO: cada jugador recibe sus propios puntos)
         // ============================================================
         applyScoreBtn.addEventListener('click', function() {
             if (gameFinished) {
                 closeScorePanel();
                 return;
             }
-            var inputs = scoreInputs.querySelectorAll('input[type="number"]');
-            var pointsAdded = [];
-            for (var i = 0; i < players.length; i++) pointsAdded[i] = 0;
 
+            // Recoger los valores de los inputs
+            var inputs = scoreInputs.querySelectorAll('input[type="number"]');
+            // Inicializar un array con ceros para todos los jugadores
+            var puntosPorJugador = [];
+            for (var i = 0; i < players.length; i++) {
+                puntosPorJugador[i] = 0;
+            }
+
+            // Asignar cada valor al jugador correspondiente según su índice
             for (var j = 0; j < inputs.length; j++) {
                 var idx = parseInt(inputs[j].id.split('-')[1]);
                 var val = parseInt(inputs[j].value) || 0;
@@ -962,21 +968,28 @@
                     alert('Los puntos no pueden ser negativos.');
                     return;
                 }
-                pointsAdded[idx] = val;
+                // Solo asignamos si no es el ganador (el ganador siempre suma 0)
+                if (currentWinner !== idx) {
+                    puntosPorJugador[idx] = val;
+                }
+                // Si es el ganador, se queda en 0
             }
 
-            var realAdded = [];
-            for (var k = 0; k < pointsAdded.length; k++) {
-                realAdded[k] = (currentWinner === k) ? 0 : pointsAdded[k];
+            // Ahora sumamos los puntos a cada jugador
+            for (var k = 0; k < puntosPorJugador.length; k++) {
+                var puntos = puntosPorJugador[k];
+                if (puntos > 0) {
+                    players[k].puntos += puntos;
+                    players[k].historialPuntos.push(players[k].puntos);
+                } else {
+                    // Si suma 0, igualmente añadimos el total actual al historial para mantener el alineamiento
+                    players[k].historialPuntos.push(players[k].puntos);
+                }
             }
 
-            for (var m = 0; m < realAdded.length; m++) {
-                players[m].puntos += realAdded[m];
-                players[m].historialPuntos.push(players[m].puntos);
-            }
-
+            // Guardar en historial para deshacer
             history.push({
-                pointsAdded: realAdded.slice(),
+                pointsAdded: puntosPorJugador.slice(),
                 winner: currentWinner
             });
 
