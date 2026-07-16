@@ -20,6 +20,7 @@
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             font-size: 18px;
             color: #1a2634;
+            position: relative;
         }
         .screen {
             max-width: 700px;
@@ -29,6 +30,28 @@
             padding: 20px 16px;
             border-radius: 20px;
             box-shadow: 0 8px 30px rgba(0,0,0,0.10);
+        }
+        .footer-info {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.7rem;
+            color: #6c757d;
+            background: rgba(255,255,255,0.9);
+            padding: 4px 12px;
+            border-radius: 12px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            z-index: 999;
+            pointer-events: none;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .footer-info .version {
+            font-weight: 600;
+        }
+        .footer-info .copyright {
+            color: #6c757d;
         }
         h1, h2, h3 {
             text-align: center;
@@ -406,6 +429,7 @@
             .puntos-historial .item { font-size: 0.75rem; padding: 2px 4px; min-width: 24px; }
             .puntos-historial .item .total { font-size: 0.9rem; }
             .puntos-historial .item .inc { font-size: 0.55rem; }
+            .footer-info { font-size: 0.6rem; padding: 2px 8px; }
         }
         @media (max-width: 380px) {
             #gameButtons button { flex: 1 1 80px; min-width: 70px; font-size: 0.9rem; }
@@ -418,6 +442,12 @@
     </style>
 </head>
 <body>
+
+    <!-- Pie de página con versión y copyright -->
+    <div class="footer-info">
+        <span class="version">v.0.1</span>
+        <span class="copyright">© 2026 · Todos los derechos reservados</span>
+    </div>
 
     <div id="setup" class="screen">
         <h1>🎯 Puntuación DOS</h1>
@@ -484,42 +514,42 @@
         // ============================================================
         //  ESTADO
         // ============================================================
-        var players = [];
-        var currentWinner = null;
-        var history = [];
-        var gameFinished = false;
-        var puntuacionFinal = 200;
+        let players = [];
+        let currentWinner = null;
+        let history = [];
+        let gameFinished = false;
+        let puntuacionFinal = 200;
 
         // ============================================================
         //  DOM REFERENCIAS
         // ============================================================
-        var setupScreen = document.getElementById('setup');
-        var gameScreen = document.getElementById('game');
-        var numPlayersSelect = document.getElementById('numPlayers');
-        var puntuacionFinalInput = document.getElementById('puntuacionFinal');
-        var namesContainer = document.getElementById('namesContainer');
-        var startGameBtn = document.getElementById('startGame');
-        var scoreBody = document.getElementById('scoreBody');
-        var newRoundBtn = document.getElementById('newRound');
-        var scoreButton = document.getElementById('scoreButton');
-        var undoButton = document.getElementById('undoButton');
-        var resetScoresBtn = document.getElementById('resetScoresBtn');
-        var restartGameBtn = document.getElementById('restartGameBtn');
-        var statusMessage = document.getElementById('statusMessage');
-        var scorePanel = document.getElementById('scorePanel');
-        var scoreInputs = document.getElementById('scoreInputs');
-        var applyScoreBtn = document.getElementById('applyScore');
-        var cancelScoreBtn = document.getElementById('cancelScore');
-        var closeModalBtn = document.getElementById('closeModalBtn');
-        var finalPanel = document.getElementById('finalPanel');
-        var finalResult = document.getElementById('finalResult');
-        var resetGameBtn = document.getElementById('resetGame');
+        const setupScreen = document.getElementById('setup');
+        const gameScreen = document.getElementById('game');
+        const numPlayersSelect = document.getElementById('numPlayers');
+        const puntuacionFinalInput = document.getElementById('puntuacionFinal');
+        const namesContainer = document.getElementById('namesContainer');
+        const startGameBtn = document.getElementById('startGame');
+        const scoreBody = document.getElementById('scoreBody');
+        const newRoundBtn = document.getElementById('newRound');
+        const scoreButton = document.getElementById('scoreButton');
+        const undoButton = document.getElementById('undoButton');
+        const resetScoresBtn = document.getElementById('resetScoresBtn');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const scorePanel = document.getElementById('scorePanel');
+        const scoreInputs = document.getElementById('scoreInputs');
+        const applyScoreBtn = document.getElementById('applyScore');
+        const cancelScoreBtn = document.getElementById('cancelScore');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const finalPanel = document.getElementById('finalPanel');
+        const finalResult = document.getElementById('finalResult');
+        const resetGameBtn = document.getElementById('resetGame');
 
         // ============================================================
         //  GUARDAR / CARGAR ESTADO (localStorage)
         // ============================================================
         function saveState() {
-            var state = {
+            const state = {
                 players: players,
                 currentWinner: currentWinner,
                 history: history,
@@ -534,9 +564,9 @@
 
         function loadState() {
             try {
-                var raw = localStorage.getItem('puntuacionDosState');
+                const raw = localStorage.getItem('puntuacionDosState');
                 if (!raw) return false;
-                var state = JSON.parse(raw);
+                const state = JSON.parse(raw);
                 if (!state.players || state.players.length === 0) return false;
 
                 players = state.players;
@@ -579,7 +609,7 @@
 
         function checkGameEnd() {
             if (gameFinished) return true;
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 if (players[i].puntos >= puntuacionFinal) {
                     return true;
                 }
@@ -594,14 +624,12 @@
             undoButton.disabled = true;
             resetScoresBtn.disabled = true;
 
-            var sorted = players.slice().sort(function(a, b) {
-                return a.puntos - b.puntos;
-            });
+            const sorted = players.slice().sort((a, b) => a.puntos - b.puntos);
 
-            var html = '<div class="table-wrap"><table class="final-table"><thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead><tbody>';
-            for (var i = 0; i < sorted.length; i++) {
-                var p = sorted[i];
-                var medal = '';
+            let html = '<div class="table-wrap"><table class="final-table"><thead><tr><th>Posición</th><th>Jugador</th><th>Puntos</th></tr></thead><tbody>';
+            for (let i = 0; i < sorted.length; i++) {
+                const p = sorted[i];
+                let medal = '';
                 if (i === 0) medal = '🥇 (¡GANADOR!)';
                 else if (i === 1) medal = '🥈';
                 else if (i === 2) medal = '🥉';
@@ -617,38 +645,38 @@
         }
 
         function renderGame() {
-            var tbody = scoreBody;
+            const tbody = scoreBody;
             tbody.innerHTML = '';
-            for (var i = 0; i < players.length; i++) {
-                var p = players[i];
-                var tr = document.createElement('tr');
+            for (let i = 0; i < players.length; i++) {
+                const p = players[i];
+                const tr = document.createElement('tr');
                 if (currentWinner === i) tr.classList.add('winner');
 
-                var tdName = document.createElement('td');
+                const tdName = document.createElement('td');
                 tdName.textContent = p.nombre;
 
-                var tdPuntos = document.createElement('td');
-                var contenedorHistorial = document.createElement('div');
+                const tdPuntos = document.createElement('td');
+                const contenedorHistorial = document.createElement('div');
                 contenedorHistorial.className = 'puntos-historial';
 
                 if (!p.historialPuntos || p.historialPuntos.length === 0) {
-                    var item = document.createElement('div');
+                    const item = document.createElement('div');
                     item.className = 'item';
                     item.innerHTML = '<span class="total">0</span>';
                     contenedorHistorial.appendChild(item);
                 } else {
-                    for (var j = 0; j < p.historialPuntos.length; j++) {
-                        var total = p.historialPuntos[j];
-                        var item2 = document.createElement('div');
+                    for (let j = 0; j < p.historialPuntos.length; j++) {
+                        const total = p.historialPuntos[j];
+                        const item2 = document.createElement('div');
                         item2.className = 'item';
-                        var inc = 0;
+                        let inc = 0;
                         if (j === 0) {
                             inc = total;
                         } else {
                             inc = total - p.historialPuntos[j-1];
                         }
-                        var incClass = '';
-                        var incText = '';
+                        let incClass = '';
+                        let incText = '';
                         if (inc > 0) {
                             incClass = 'positivo';
                             incText = '+' + inc;
@@ -665,8 +693,8 @@
                 }
                 tdPuntos.appendChild(contenedorHistorial);
 
-                var tdWinner = document.createElement('td');
-                var winnerBtn = document.createElement('button');
+                const tdWinner = document.createElement('td');
+                const winnerBtn = document.createElement('button');
                 winnerBtn.className = 'winner-btn';
                 winnerBtn.textContent = currentWinner === i ? '👑' : '⬜';
                 if (currentWinner === i) winnerBtn.classList.add('active');
@@ -702,10 +730,10 @@
         //  SETUP
         // ============================================================
         function setupNames() {
-            var num = parseInt(numPlayersSelect.value);
+            const num = parseInt(numPlayersSelect.value);
             namesContainer.innerHTML = '';
-            for (var i = 0; i < num; i++) {
-                var input = document.createElement('input');
+            for (let i = 0; i < num; i++) {
+                const input = document.createElement('input');
                 input.type = 'text';
                 input.placeholder = 'Nombre del jugador ' + (i + 1);
                 input.id = 'name-' + i;
@@ -717,11 +745,11 @@
         setupNames();
 
         startGameBtn.addEventListener('click', function() {
-            var inputs = namesContainer.querySelectorAll('input');
-            var names = [];
-            var valid = true;
-            for (var i = 0; i < inputs.length; i++) {
-                var val = inputs[i].value.trim();
+            const inputs = namesContainer.querySelectorAll('input');
+            const names = [];
+            let valid = true;
+            for (let i = 0; i < inputs.length; i++) {
+                const val = inputs[i].value.trim();
                 if (val === '') {
                     valid = false;
                     inputs[i].style.borderColor = 'red';
@@ -734,7 +762,7 @@
                 alert('Por favor, introduce todos los nombres.');
                 return;
             }
-            var final = parseInt(puntuacionFinalInput.value);
+            const final = parseInt(puntuacionFinalInput.value);
             if (isNaN(final) || final < 10) {
                 alert('Introduce una puntuación final válida (mínimo 10).');
                 return;
@@ -742,7 +770,7 @@
             puntuacionFinal = final;
 
             players = [];
-            for (var j = 0; j < names.length; j++) {
+            for (let j = 0; j < names.length; j++) {
                 players.push({
                     nombre: names[j],
                     puntos: 0,
@@ -778,8 +806,8 @@
         // ============================================================
         function openScorePanel() {
             if (gameFinished) return;
-            var toScore = [];
-            for (var i = 0; i < players.length; i++) {
+            const toScore = [];
+            for (let i = 0; i < players.length; i++) {
                 if (i !== currentWinner) {
                     toScore.push({ nombre: players[i].nombre, index: i });
                 }
@@ -791,15 +819,15 @@
             }
 
             scoreInputs.innerHTML = '';
-            for (var j = 0; j < toScore.length; j++) {
-                var p = toScore[j];
-                var group = document.createElement('div');
+            for (let j = 0; j < toScore.length; j++) {
+                const p = toScore[j];
+                const group = document.createElement('div');
                 group.className = 'score-input-group';
 
-                var label = document.createElement('label');
+                const label = document.createElement('label');
                 label.textContent = p.nombre;
 
-                var input = document.createElement('input');
+                const input = document.createElement('input');
                 input.type = 'number';
                 input.min = 0;
                 input.value = 0;
@@ -807,12 +835,12 @@
                 input.inputMode = 'numeric';
                 input.autocomplete = 'off';
 
-                var cartasContainer = document.createElement('div');
+                const cartasContainer = document.createElement('div');
                 cartasContainer.className = 'cartas-container';
 
                 // Definir cartas y sus valores
-                var cartas = [1, 3, 4, 5, 6, 7, 8, 9, 10, '2', '#'];
-                var valores = {};
+                const cartas = [1, 3, 4, 5, 6, 7, 8, 9, 10, '2', '#'];
+                const valores = {};
                 cartas.forEach(function(c) {
                     if (c === '2') valores[c] = 20;
                     else if (c === '#') valores[c] = 40;
@@ -821,26 +849,26 @@
 
                 // Para cada carta, creamos su botón
                 cartas.forEach(function(c) {
-                    var valor = valores[c];
-                    var etiqueta = c.toString();
-                    var btn = document.createElement('button');
+                    const valor = valores[c];
+                    const etiqueta = c.toString();
+                    const btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'carta-btn';
 
                     // Contador de veces seleccionada (empieza en 0)
-                    var contador = 0;
+                    let contador = 0;
 
                     // Elementos visuales
-                    var spanValor = document.createElement('span');
+                    const spanValor = document.createElement('span');
                     spanValor.className = 'subvalor';
                     spanValor.textContent = valor;
 
-                    var spanContador = document.createElement('span');
+                    const spanContador = document.createElement('span');
                     spanContador.className = 'contador';
                     spanContador.textContent = '0';
 
                     // Contenedor para etiqueta + valor + contador
-                    var topDiv = document.createElement('div');
+                    const topDiv = document.createElement('div');
                     topDiv.style.display = 'flex';
                     topDiv.style.flexDirection = 'column';
                     topDiv.style.alignItems = 'center';
@@ -851,13 +879,13 @@
                     btn.appendChild(topDiv);
 
                     // Flotante
-                    var flotante = document.createElement('span');
+                    const flotante = document.createElement('span');
                     flotante.className = 'flotante';
                     flotante.textContent = '+' + valor;
                     btn.appendChild(flotante);
 
-                    var timeoutId = null;
-                    var isLongPress = false;
+                    let timeoutId = null;
+                    let isLongPress = false;
 
                     // Función para actualizar el contador visual
                     function actualizarContador() {
@@ -890,7 +918,7 @@
                                 // Restar una unidad
                                 contador--;
                                 actualizarContador();
-                                var current = parseInt(input.value) || 0;
+                                let current = parseInt(input.value) || 0;
                                 current -= valor;
                                 if (current < 0) current = 0;
                                 input.value = current;
@@ -910,7 +938,7 @@
                             // SUMAR
                             contador++;
                             actualizarContador();
-                            var current = parseInt(input.value) || 0;
+                            let current = parseInt(input.value) || 0;
                             current += valor;
                             input.value = current;
                             mostrarFlotante('+' + valor, 'sumar');
@@ -933,7 +961,7 @@
             }
 
             scorePanel.style.display = 'flex';
-            var firstInput = scoreInputs.querySelector('input[type="number"]');
+            const firstInput = scoreInputs.querySelector('input[type="number"]');
             if (firstInput) setTimeout(function() { firstInput.focus(); }, 100);
         }
 
@@ -944,7 +972,7 @@
         scoreButton.addEventListener('click', openScorePanel);
 
         // ============================================================
-        //  APLICAR PUNTUACIÓN (CORREGIDO: cada jugador recibe sus propios puntos)
+        //  APLICAR PUNTUACIÓN (ASIGNACIÓN DIRECTA POR JUGADOR)
         // ============================================================
         applyScoreBtn.addEventListener('click', function() {
             if (gameFinished) {
@@ -952,44 +980,40 @@
                 return;
             }
 
-            // Recoger los valores de los inputs
-            var inputs = scoreInputs.querySelectorAll('input[type="number"]');
-            // Inicializar un array con ceros para todos los jugadores
-            var puntosPorJugador = [];
-            for (var i = 0; i < players.length; i++) {
-                puntosPorJugador[i] = 0;
-            }
+            // Recoger valores de los inputs
+            const inputs = scoreInputs.querySelectorAll('input[type="number"]');
+            // Objeto para almacenar puntos por índice de jugador
+            const puntosPorJugador = {};
 
-            // Asignar cada valor al jugador correspondiente según su índice
-            for (var j = 0; j < inputs.length; j++) {
-                var idx = parseInt(inputs[j].id.split('-')[1]);
-                var val = parseInt(inputs[j].value) || 0;
+            for (let j = 0; j < inputs.length; j++) {
+                const idx = parseInt(inputs[j].id.split('-')[1]);
+                const val = parseInt(inputs[j].value) || 0;
                 if (val < 0) {
                     alert('Los puntos no pueden ser negativos.');
                     return;
                 }
-                // Solo asignamos si no es el ganador (el ganador siempre suma 0)
+                // Solo asignamos si no es el ganador
                 if (currentWinner !== idx) {
                     puntosPorJugador[idx] = val;
                 }
-                // Si es el ganador, se queda en 0
+                // Si es el ganador, no se añade (queda 0)
             }
 
-            // Ahora sumamos los puntos a cada jugador
-            for (var k = 0; k < puntosPorJugador.length; k++) {
-                var puntos = puntosPorJugador[k];
-                if (puntos > 0) {
-                    players[k].puntos += puntos;
-                    players[k].historialPuntos.push(players[k].puntos);
-                } else {
-                    // Si suma 0, igualmente añadimos el total actual al historial para mantener el alineamiento
-                    players[k].historialPuntos.push(players[k].puntos);
-                }
+            // Aplicar puntos a cada jugador
+            for (let k = 0; k < players.length; k++) {
+                const puntos = puntosPorJugador[k] || 0;
+                players[k].puntos += puntos;
+                // Guardar el total actual en el historial (siempre, para mantener alineación)
+                players[k].historialPuntos.push(players[k].puntos);
             }
 
-            // Guardar en historial para deshacer
+            // Guardar historial completo (con ceros para los que no puntuaron)
+            const puntosArray = [];
+            for (let m = 0; m < players.length; m++) {
+                puntosArray[m] = puntosPorJugador[m] || 0;
+            }
             history.push({
-                pointsAdded: puntosPorJugador.slice(),
+                pointsAdded: puntosArray,
                 winner: currentWinner
             });
 
@@ -1022,8 +1046,8 @@
                 alert('No hay rondas para deshacer.');
                 return;
             }
-            var last = history.pop();
-            for (var i = 0; i < last.pointsAdded.length; i++) {
+            const last = history.pop();
+            for (let i = 0; i < last.pointsAdded.length; i++) {
                 players[i].puntos -= last.pointsAdded[i];
                 if (players[i].puntos < 0) players[i].puntos = 0;
                 if (players[i].historialPuntos.length > 0) {
@@ -1055,7 +1079,7 @@
             } else {
                 if (!confirm('¿Resetear todas las puntuaciones a 0? Se perderá el historial.')) return;
             }
-            for (var i = 0; i < players.length; i++) {
+            for (let i = 0; i < players.length; i++) {
                 players[i].puntos = 0;
                 players[i].historialPuntos = [];
             }
@@ -1099,10 +1123,11 @@
         if (!loadState()) {
             setupScreen.style.display = 'block';
             gameScreen.style.display = 'none';
-        //v.0
+            //v.0.1
         }
 
     })();
     </script>
+
 </body>
 </html>
