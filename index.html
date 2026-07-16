@@ -306,17 +306,30 @@
             background: #fafbfc;
             position: relative;
             user-select: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .carta-btn:active {
             transform: scale(0.90);
             background: #e2e6ea;
         }
         .carta-btn .subvalor {
-            display: block;
             font-size: 0.65rem;
             font-weight: 400;
             color: #6c757d;
-            margin-top: -4px;
+        }
+        .carta-btn .contador {
+            font-size: 0.55rem;
+            font-weight: 700;
+            color: #007bff;
+            background: #e9ecef;
+            padding: 0 4px;
+            border-radius: 8px;
+            margin-top: 1px;
+            min-width: 16px;
+            text-align: center;
         }
         .carta-btn .flotante {
             position: absolute;
@@ -340,6 +353,9 @@
         }
         .carta-btn .flotante.restar {
             background: #dc3545;
+        }
+        .carta-btn .flotante.cero {
+            background: #6c757d;
         }
 
         .modal-actions {
@@ -380,6 +396,7 @@
             select, input[type="text"], input[type="number"] { font-size: 1rem; padding: 12px; }
             .carta-btn { font-size: 1.2rem; min-width: 44px; min-height: 44px; padding: 6px 10px; }
             .carta-btn .subvalor { font-size: 0.55rem; }
+            .carta-btn .contador { font-size: 0.5rem; }
             .winner-btn { font-size: 1.5rem; min-height: 40px; min-width: 40px; padding: 4px 8px; }
             table { font-size: 1rem; }
             th, td { padding: 8px 2px; }
@@ -757,7 +774,7 @@
         });
 
         // ============================================================
-        //  ABRIR PANEL DE PUNTUACIÓN
+        //  ABRIR PANEL DE PUNTUACIÓN (con contadores y control de resta)
         // ============================================================
         function openScorePanel() {
             if (gameFinished) return;
@@ -793,26 +810,47 @@
                 var cartasContainer = document.createElement('div');
                 cartasContainer.className = 'cartas-container';
 
+                // Definir cartas y sus valores
                 var cartas = [1, 3, 4, 5, 6, 7, 8, 9, 10, '2', '#'];
-                for (var k = 0; k < cartas.length; k++) {
-                    var c = cartas[k];
+                var valores = {};
+                cartas.forEach(function(c) {
+                    if (c === '2') valores[c] = 20;
+                    else if (c === '#') valores[c] = 40;
+                    else valores[c] = c;
+                });
+
+                // Para cada carta, creamos su botón
+                cartas.forEach(function(c) {
+                    var valor = valores[c];
+                    var etiqueta = c.toString();
                     var btn = document.createElement('button');
                     btn.type = 'button';
                     btn.className = 'carta-btn';
-                    var valor, etiqueta;
-                    if (c === '2') {
-                        valor = 20;
-                        etiqueta = '2';
-                    } else if (c === '#') {
-                        valor = 40;
-                        etiqueta = '#';
-                    } else {
-                        valor = c;
-                        etiqueta = c.toString();
-                    }
-                    btn.innerHTML = etiqueta + ' <span class="subvalor">' + valor + '</span>';
-                    btn.dataset.valor = valor;
 
+                    // Contador de veces seleccionada (empieza en 0)
+                    var contador = 0;
+
+                    // Elementos visuales
+                    var spanValor = document.createElement('span');
+                    spanValor.className = 'subvalor';
+                    spanValor.textContent = valor;
+
+                    var spanContador = document.createElement('span');
+                    spanContador.className = 'contador';
+                    spanContador.textContent = '0';
+
+                    // Contenedor para etiqueta + valor + contador
+                    var topDiv = document.createElement('div');
+                    topDiv.style.display = 'flex';
+                    topDiv.style.flexDirection = 'column';
+                    topDiv.style.alignItems = 'center';
+                    topDiv.innerHTML = etiqueta;
+                    topDiv.appendChild(spanValor);
+                    topDiv.appendChild(spanContador);
+
+                    btn.appendChild(topDiv);
+
+                    // Flotante
                     var flotante = document.createElement('span');
                     flotante.className = 'flotante';
                     flotante.textContent = '+' + valor;
@@ -821,48 +859,72 @@
                     var timeoutId = null;
                     var isLongPress = false;
 
-                    (function(btn, input, valor, flotante) {
-                        btn.addEventListener('pointerdown', function(e) {
-                            e.preventDefault();
-                            isLongPress = false;
-                            timeoutId = setTimeout(function() {
-                                isLongPress = true;
+                    // Función para actualizar el contador visual
+                    function actualizarContador() {
+                        spanContador.textContent = contador;
+                    }
+
+                    // Función para mostrar flotante con mensaje
+                    function mostrarFlotante(texto, tipo) {
+                        flotante.textContent = texto;
+                        flotante.className = 'flotante';
+                        if (tipo === 'restar') flotante.classList.add('restar');
+                        else if (tipo === 'cero') flotante.classList.add('cero');
+                        else flotante.classList.add('mostrar'); // suma normal
+                        // Forzar reflow para reiniciar animación
+                        void flotante.offsetWidth;
+                        flotante.classList.add('mostrar');
+                        setTimeout(function() {
+                            flotante.className = 'flotante';
+                        }, 600);
+                    }
+
+                    // Evento inicio de presión (para detectar long press)
+                    btn.addEventListener('pointerdown', function(e) {
+                        e.preventDefault();
+                        isLongPress = false;
+                        timeoutId = setTimeout(function() {
+                            isLongPress = true;
+                            // INTENTAR RESTAR
+                            if (contador > 0) {
+                                // Restar una unidad
+                                contador--;
+                                actualizarContador();
                                 var current = parseInt(input.value) || 0;
                                 current -= valor;
                                 if (current < 0) current = 0;
                                 input.value = current;
-                                flotante.textContent = '-' + valor;
-                                flotante.className = 'flotante mostrar restar';
-                                setTimeout(function() {
-                                    flotante.className = 'flotante';
-                                }, 600);
-                            }, 500);
-                        });
-
-                        btn.addEventListener('pointerup', function(e) {
-                            e.preventDefault();
-                            clearTimeout(timeoutId);
-                            if (!isLongPress) {
-                                var current = parseInt(input.value) || 0;
-                                current += valor;
-                                input.value = current;
-                                flotante.textContent = '+' + valor;
-                                flotante.className = 'flotante mostrar';
-                                setTimeout(function() {
-                                    flotante.className = 'flotante';
-                                }, 600);
+                                mostrarFlotante('-' + valor, 'restar');
+                            } else {
+                                // No se puede restar, mostrar -0
+                                mostrarFlotante('-0', 'cero');
                             }
-                            isLongPress = false;
-                        });
+                        }, 500);
+                    });
 
-                        btn.addEventListener('pointercancel', function() {
-                            clearTimeout(timeoutId);
-                            isLongPress = false;
-                        });
-                    })(btn, input, valor, flotante);
+                    // Evento fin de presión (click normal)
+                    btn.addEventListener('pointerup', function(e) {
+                        e.preventDefault();
+                        clearTimeout(timeoutId);
+                        if (!isLongPress) {
+                            // SUMAR
+                            contador++;
+                            actualizarContador();
+                            var current = parseInt(input.value) || 0;
+                            current += valor;
+                            input.value = current;
+                            mostrarFlotante('+' + valor, 'sumar');
+                        }
+                        isLongPress = false;
+                    });
+
+                    btn.addEventListener('pointercancel', function() {
+                        clearTimeout(timeoutId);
+                        isLongPress = false;
+                    });
 
                     cartasContainer.appendChild(btn);
-                }
+                });
 
                 group.appendChild(label);
                 group.appendChild(input);
@@ -966,14 +1028,11 @@
         });
 
         // ============================================================
-        //  RESETEAR PUNTUACIONES (mantiene jugadores)
+        //  RESETEAR PUNTUACIONES
         // ============================================================
         resetScoresBtn.addEventListener('click', function() {
             if (gameFinished) {
-                // Si ya terminó, también permitimos resetear para seguir jugando
-                // pero primero confirmamos
                 if (!confirm('¿Resetear todas las puntuaciones a 0 y continuar?')) return;
-                // Quitamos el estado de finalizado
                 gameFinished = false;
                 finalPanel.style.display = 'none';
                 newRoundBtn.disabled = false;
@@ -983,7 +1042,6 @@
             } else {
                 if (!confirm('¿Resetear todas las puntuaciones a 0? Se perderá el historial.')) return;
             }
-            // Resetear puntos e historial
             for (var i = 0; i < players.length; i++) {
                 players[i].puntos = 0;
                 players[i].historialPuntos = [];
@@ -997,7 +1055,7 @@
         });
 
         // ============================================================
-        //  REINICIAR PARTIDA (vuelve a setup)
+        //  REINICIAR PARTIDA
         // ============================================================
         function restartGame() {
             if (!confirm('¿Reiniciar partida? Se perderán todos los datos.')) return;
@@ -1009,12 +1067,10 @@
             currentWinner = null;
             history = [];
             gameFinished = false;
-            // Resetear inputs de setup a valores por defecto
             numPlayersSelect.value = '3';
             puntuacionFinalInput.value = '200';
             setupNames();
             statusMessage.textContent = '';
-            // Habilitar botones (por si acaso)
             newRoundBtn.disabled = false;
             scoreButton.disabled = false;
             undoButton.disabled = false;
@@ -1028,7 +1084,6 @@
         //  CARGAR ESTADO AL INICIAR
         // ============================================================
         if (!loadState()) {
-            // No hay estado guardado, mostramos setup
             setupScreen.style.display = 'block';
             gameScreen.style.display = 'none';
         }
