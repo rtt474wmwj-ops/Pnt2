@@ -135,6 +135,8 @@
             scroll-behavior: smooth;
             border: 1px solid #e9ecef;
             border-radius: 12px;
+            /* Ajuste para mostrar 3 columnas de rondas */
+            max-width: 100%;
         }
         .puntos-table {
             width: 100%;
@@ -168,21 +170,23 @@
             left: 0;
             z-index: 3;
             background: #ffffff;
-            min-width: 90px;
+            min-width: 100px;
             max-width: 130px;
             word-break: break-word;
             white-space: normal;
+            font-weight: 600;
         }
         .puntos-table th:first-child {
             background: #f1f3f5;
             z-index: 4;
         }
 
-        /* Columnas de rondas (ancho fijo para que quepan al menos 4) */
+        /* Columnas de rondas (ancho fijo para que quepan 3) */
         .puntos-table th:not(:first-child):not(:last-child),
         .puntos-table td:not(:first-child):not(:last-child) {
             width: 80px;
             min-width: 70px;
+            max-width: 90px;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -440,7 +444,7 @@
 
             .puntos-table th:first-child,
             .puntos-table td:first-child {
-                min-width: 70px;
+                min-width: 80px;
                 max-width: 100px;
                 font-size: 0.85rem;
             }
@@ -448,7 +452,7 @@
             .puntos-table th:not(:first-child):not(:last-child),
             .puntos-table td:not(:first-child):not(:last-child) {
                 width: 65px;
-                min-width: 60px;
+                min-width: 55px;
                 font-size: 0.8rem;
             }
 
@@ -468,14 +472,14 @@
             .puntos-table { min-width: 300px; }
             .puntos-table th:first-child,
             .puntos-table td:first-child {
-                min-width: 60px;
-                max-width: 80px;
+                min-width: 70px;
+                max-width: 85px;
                 font-size: 0.8rem;
             }
             .puntos-table th:not(:first-child):not(:last-child),
             .puntos-table td:not(:first-child):not(:last-child) {
                 width: 55px;
-                min-width: 50px;
+                min-width: 48px;
                 font-size: 0.75rem;
             }
             .puntos-table .total-puntos { font-size: 0.8rem; }
@@ -487,7 +491,7 @@
 
     <!-- Pie de página con versión y copyright -->
     <div class="footer-info">
-        <span class="version">v.0.2.4</span>
+        <span class="version">v.0.2.5</span>
         <span class="copyright">© 2026 · Todos los derechos reservados</span>
     </div>
 
@@ -746,7 +750,7 @@
                 });
             });
 
-            // Scroll al final (última columna) si hay rondas
+            // Scroll al final (última columna) para mostrar las 3 rondas más recientes
             if (tableWrap && maxRondas > 0) {
                 setTimeout(() => {
                     tableWrap.scrollLeft = tableWrap.scrollWidth;
