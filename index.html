@@ -128,49 +128,97 @@
         }
         .table-wrap {
             overflow-x: auto;
+            overflow-y: hidden;
             margin: 12px 0;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
         }
-        table {
+        /* Tabla de puntuaciones por rondas */
+        .puntos-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 1.1rem;
+            font-size: 1rem;
             min-width: 300px;
+            table-layout: fixed;
         }
-        th, td {
-            padding: 10px 4px;
+        .puntos-table th,
+        .puntos-table td {
+            padding: 8px 4px;
             text-align: center;
             border-bottom: 1px solid #e9ecef;
             vertical-align: middle;
+            white-space: nowrap;
         }
-        th {
+        .puntos-table th {
             background: #f1f3f5;
             font-weight: 600;
             color: #1a2634;
+            position: sticky;
+            top: 0;
+            z-index: 2;
         }
-        th:first-child, td:first-child {
+        .puntos-table th:first-child,
+        .puntos-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 3;
+            background: #ffffff;
             min-width: 80px;
             max-width: 120px;
             word-break: break-word;
+            white-space: normal;
         }
-        th:last-child, td:last-child {
+        .puntos-table th:first-child {
+            background: #f1f3f5;
+            z-index: 4;
+        }
+        /* Columna de ganador fija a la derecha */
+        .puntos-table th:last-child,
+        .puntos-table td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 3;
+            background: #ffffff;
             min-width: 70px;
             max-width: 80px;
         }
-        tr.winner {
-            background: #d4edda;
+        .puntos-table th:last-child {
+            background: #f1f3f5;
+            z-index: 4;
         }
-        tr.winner td:first-child::before {
+        .puntos-table tr.winner td:first-child::before {
             content: "👑 ";
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
+        .puntos-table .ronda-header {
+            font-size: 0.75rem;
+            color: #6c757d;
+            font-weight: 400;
+        }
+        .puntos-table .total-puntos {
+            font-weight: 600;
+        }
+        .puntos-table .inc-puntos {
+            font-size: 0.6rem;
+            color: #28a745;
+            display: block;
+            margin-top: -4px;
+        }
+        .puntos-table .inc-puntos.cero {
+            color: #6c757d;
+        }
+        .puntos-table .inc-puntos.negativo {
+            color: #dc3545;
+        }
+
         .winner-btn {
             background: transparent;
             border: 1px solid #ced4da;
             border-radius: 10px;
-            padding: 6px 10px;
-            font-size: 1.8rem;
-            min-height: 44px;
-            min-width: 44px;
+            padding: 4px 8px;
+            font-size: 1.5rem;
+            min-height: 38px;
+            min-width: 38px;
             cursor: pointer;
             transition: background 0.1s;
             background: #f8f9fa;
@@ -192,59 +240,6 @@
             background: #f8f9fa;
             padding: 10px;
             border-radius: 12px;
-        }
-
-        .puntos-historial {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            overflow-y: hidden;
-            gap: 6px;
-            padding: 4px 2px;
-            max-width: 220px;
-            margin: 0 auto;
-            justify-content: flex-start;
-        }
-        .puntos-historial::-webkit-scrollbar {
-            height: 3px;
-        }
-        .puntos-historial::-webkit-scrollbar-thumb {
-            background: #c1c7cd;
-            border-radius: 4px;
-        }
-        .puntos-historial .item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            white-space: nowrap;
-            font-size: 0.85rem;
-            background: #f1f3f5;
-            padding: 2px 6px;
-            border-radius: 6px;
-            min-width: 28px;
-            flex-shrink: 0;
-        }
-        .puntos-historial .item .total {
-            font-weight: 700;
-            font-size: 1rem;
-        }
-        .puntos-historial .item .inc {
-            font-size: 0.6rem;
-            font-weight: 600;
-            margin-top: -2px;
-        }
-        .puntos-historial .item .inc.positivo {
-            color: #28a745;
-        }
-        .puntos-historial .item .inc.cero {
-            color: #6c757d;
-        }
-        .puntos-historial .item .inc.negativo {
-            color: #dc3545;
-        }
-        .puntos-historial .item:last-child {
-            background: #e2e6ea;
-            font-weight: 700;
         }
 
         .modal {
@@ -420,24 +415,17 @@
             .carta-btn { font-size: 1.2rem; min-width: 44px; min-height: 44px; padding: 6px 10px; }
             .carta-btn .subvalor { font-size: 0.55rem; }
             .carta-btn .contador { font-size: 0.5rem; }
-            .winner-btn { font-size: 1.5rem; min-height: 40px; min-width: 40px; padding: 4px 8px; }
-            table { font-size: 1rem; }
-            th, td { padding: 8px 2px; }
-            .modal-content { padding: 16px 12px; }
-            .score-input-group input[type="number"] { width: 100px; font-size: 1rem; }
-            .puntos-historial { max-width: 150px; gap: 4px; }
-            .puntos-historial .item { font-size: 0.75rem; padding: 2px 4px; min-width: 24px; }
-            .puntos-historial .item .total { font-size: 0.9rem; }
-            .puntos-historial .item .inc { font-size: 0.55rem; }
+            .winner-btn { font-size: 1.3rem; min-height: 36px; min-width: 36px; padding: 2px 6px; }
+            .puntos-table { font-size: 0.9rem; }
+            .puntos-table th, .puntos-table td { padding: 6px 2px; }
+            .puntos-table th:first-child, .puntos-table td:first-child { min-width: 60px; max-width: 90px; }
             .footer-info { font-size: 0.6rem; padding: 2px 8px; }
         }
         @media (max-width: 380px) {
             #gameButtons button { flex: 1 1 80px; min-width: 70px; font-size: 0.9rem; }
             .cartas-container { gap: 4px; }
             .carta-btn { font-size: 1rem; min-width: 38px; min-height: 38px; padding: 4px 6px; }
-            .puntos-historial { max-width: 120px; }
-            .puntos-historial .item { font-size: 0.7rem; padding: 1px 3px; min-width: 20px; }
-            .puntos-historial .item .total { font-size: 0.8rem; }
+            .puntos-table { font-size: 0.8rem; }
         }
     </style>
 </head>
@@ -445,7 +433,7 @@
 
     <!-- Pie de página con versión y copyright -->
     <div class="footer-info">
-        <span class="version">v.0.1</span>
+        <span class="version">v.0.2</span>
         <span class="copyright">© 2026 · Todos los derechos reservados</span>
     </div>
 
@@ -464,16 +452,10 @@
     </div>
 
     <div id="game" class="screen" style="display:none;">
-        <h2>📊 Puntuaciones</h2>
-        <div class="table-wrap">
-            <table id="scoreTable">
-                <thead>
-                    <tr>
-                        <th>Jugador</th>
-                        <th>Puntos</th>
-                        <th>Ganador ronda</th>
-                    </tr>
-                </thead>
+        <h2>📊 Puntuaciones por rondas</h2>
+        <div class="table-wrap" id="tableWrap">
+            <table class="puntos-table" id="scoreTable">
+                <thead id="tableHead"></thead>
                 <tbody id="scoreBody"></tbody>
             </table>
         </div>
@@ -516,9 +498,10 @@
         // ============================================================
         let players = [];
         let currentWinner = null;
-        let history = [];
+        let history = []; // guarda { pointsAdded: [], winner: idx | null }
         let gameFinished = false;
         let puntuacionFinal = 200;
+        let rondaActual = 0; // para numerar rondas
 
         // ============================================================
         //  DOM REFERENCIAS
@@ -529,7 +512,9 @@
         const puntuacionFinalInput = document.getElementById('puntuacionFinal');
         const namesContainer = document.getElementById('namesContainer');
         const startGameBtn = document.getElementById('startGame');
+        const tableHead = document.getElementById('tableHead');
         const scoreBody = document.getElementById('scoreBody');
+        const tableWrap = document.getElementById('tableWrap');
         const newRoundBtn = document.getElementById('newRound');
         const scoreButton = document.getElementById('scoreButton');
         const undoButton = document.getElementById('undoButton');
@@ -555,6 +540,7 @@
                 history: history,
                 gameFinished: gameFinished,
                 puntuacionFinal: puntuacionFinal,
+                rondaActual: rondaActual,
                 gameStarted: (setupScreen.style.display === 'none')
             };
             try {
@@ -574,6 +560,7 @@
                 history = state.history || [];
                 gameFinished = state.gameFinished || false;
                 puntuacionFinal = state.puntuacionFinal || 200;
+                rondaActual = state.rondaActual || 0;
 
                 if (state.gameStarted) {
                     setupScreen.style.display = 'none';
@@ -601,9 +588,9 @@
                 return;
             }
             if (currentWinner !== null && players[currentWinner]) {
-                statusMessage.textContent = '👑 Ganador de la ronda: ' + players[currentWinner].nombre;
+                statusMessage.textContent = '👑 Ganador de la ronda actual: ' + players[currentWinner].nombre;
             } else {
-                statusMessage.textContent = '⚪ Sin ganador seleccionado.';
+                statusMessage.textContent = '⚪ Sin ganador seleccionado para la ronda actual.';
             }
         }
 
@@ -644,74 +631,74 @@
             saveState();
         }
 
+        // ============================================================
+        //  RENDERIZAR TABLA DE PUNTUACIONES POR RONDAS
+        // ============================================================
         function renderGame() {
-            const tbody = scoreBody;
-            tbody.innerHTML = '';
+            // Construir cabecera: Jugador + columnas por ronda + Ganador
+            let theadHTML = '<tr><th>Jugador</th>';
+            // Determinar número de rondas (máximo historial de cualquier jugador)
+            let maxRondas = 0;
+            for (let p of players) {
+                if (p.historialPuntos && p.historialPuntos.length > maxRondas) {
+                    maxRondas = p.historialPuntos.length;
+                }
+            }
+            for (let r = 0; r < maxRondas; r++) {
+                theadHTML += `<th>Ronda ${r+1}</th>`;
+            }
+            theadHTML += '<th>Ganador</th></tr>';
+            tableHead.innerHTML = theadHTML;
+
+            // Cuerpo de la tabla: una fila por jugador
+            let tbodyHTML = '';
             for (let i = 0; i < players.length; i++) {
                 const p = players[i];
-                const tr = document.createElement('tr');
-                if (currentWinner === i) tr.classList.add('winner');
-
-                const tdName = document.createElement('td');
-                tdName.textContent = p.nombre;
-
-                const tdPuntos = document.createElement('td');
-                const contenedorHistorial = document.createElement('div');
-                contenedorHistorial.className = 'puntos-historial';
-
-                if (!p.historialPuntos || p.historialPuntos.length === 0) {
-                    const item = document.createElement('div');
-                    item.className = 'item';
-                    item.innerHTML = '<span class="total">0</span>';
-                    contenedorHistorial.appendChild(item);
-                } else {
-                    for (let j = 0; j < p.historialPuntos.length; j++) {
-                        const total = p.historialPuntos[j];
-                        const item2 = document.createElement('div');
-                        item2.className = 'item';
+                const isWinner = (currentWinner === i);
+                let rowClass = isWinner ? 'winner' : '';
+                tbodyHTML += `<tr class="${rowClass}"><td>${p.nombre}</td>`;
+                // Columnas de rondas
+                const historial = p.historialPuntos || [];
+                for (let r = 0; r < maxRondas; r++) {
+                    if (r < historial.length) {
+                        const total = historial[r];
                         let inc = 0;
-                        if (j === 0) {
-                            inc = total;
-                        } else {
-                            inc = total - p.historialPuntos[j-1];
-                        }
+                        if (r === 0) inc = total;
+                        else inc = total - historial[r-1];
                         let incClass = '';
                         let incText = '';
-                        if (inc > 0) {
-                            incClass = 'positivo';
-                            incText = '+' + inc;
-                        } else if (inc === 0) {
-                            incClass = 'cero';
-                            incText = '+0';
-                        } else {
-                            incClass = 'negativo';
-                            incText = inc.toString();
-                        }
-                        item2.innerHTML = '<span class="total">' + total + '</span><span class="inc ' + incClass + '">' + incText + '</span>';
-                        contenedorHistorial.appendChild(item2);
+                        if (inc > 0) { incClass = ''; incText = '+' + inc; }
+                        else if (inc === 0) { incClass = 'cero'; incText = '+0'; }
+                        else { incClass = 'negativo'; incText = inc.toString(); }
+                        tbodyHTML += `<td><span class="total-puntos">${total}</span><span class="inc-puntos ${incClass}">${incText}</span></td>`;
+                    } else {
+                        tbodyHTML += `<td>—</td>`;
                     }
                 }
-                tdPuntos.appendChild(contenedorHistorial);
-
-                const tdWinner = document.createElement('td');
-                const winnerBtn = document.createElement('button');
-                winnerBtn.className = 'winner-btn';
-                winnerBtn.textContent = currentWinner === i ? '👑' : '⬜';
-                if (currentWinner === i) winnerBtn.classList.add('active');
-                winnerBtn.disabled = gameFinished;
-                winnerBtn.addEventListener('click', (function(idx) {
-                    return function(e) {
-                        e.stopPropagation();
-                        if (!gameFinished) toggleWinner(idx);
-                    };
-                })(i));
-                tdWinner.appendChild(winnerBtn);
-
-                tr.appendChild(tdName);
-                tr.appendChild(tdPuntos);
-                tr.appendChild(tdWinner);
-                tbody.appendChild(tr);
+                // Columna Ganador (botón)
+                const winnerBtn = `<td><button class="winner-btn ${isWinner ? 'active' : ''}" data-player-index="${i}" ${gameFinished ? 'disabled' : ''}>${isWinner ? '👑' : '⬜'}</button></td>`;
+                tbodyHTML += winnerBtn;
+                tbodyHTML += '</tr>';
             }
+            scoreBody.innerHTML = tbodyHTML;
+
+            // Asignar eventos a los botones de ganador
+            document.querySelectorAll('.winner-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (gameFinished) return;
+                    const idx = parseInt(this.dataset.playerIndex);
+                    toggleWinner(idx);
+                });
+            });
+
+            // Scroll al final (última columna)
+            if (tableWrap) {
+                setTimeout(() => {
+                    tableWrap.scrollLeft = tableWrap.scrollWidth;
+                }, 50);
+            }
+
             updateStatus();
             saveState();
         }
@@ -780,6 +767,7 @@
             currentWinner = null;
             history = [];
             gameFinished = false;
+            rondaActual = 0;
             setupScreen.style.display = 'none';
             gameScreen.style.display = 'block';
             newRoundBtn.disabled = false;
@@ -838,7 +826,6 @@
                 const cartasContainer = document.createElement('div');
                 cartasContainer.className = 'cartas-container';
 
-                // Definir cartas y sus valores
                 const cartas = [1, 3, 4, 5, 6, 7, 8, 9, 10, '2', '#'];
                 const valores = {};
                 cartas.forEach(function(c) {
@@ -847,7 +834,6 @@
                     else valores[c] = c;
                 });
 
-                // Para cada carta, creamos su botón
                 cartas.forEach(function(c) {
                     const valor = valores[c];
                     const etiqueta = c.toString();
@@ -855,10 +841,8 @@
                     btn.type = 'button';
                     btn.className = 'carta-btn';
 
-                    // Contador de veces seleccionada (empieza en 0)
                     let contador = 0;
 
-                    // Elementos visuales
                     const spanValor = document.createElement('span');
                     spanValor.className = 'subvalor';
                     spanValor.textContent = valor;
@@ -867,7 +851,6 @@
                     spanContador.className = 'contador';
                     spanContador.textContent = '0';
 
-                    // Contenedor para etiqueta + valor + contador
                     const topDiv = document.createElement('div');
                     topDiv.style.display = 'flex';
                     topDiv.style.flexDirection = 'column';
@@ -878,7 +861,6 @@
 
                     btn.appendChild(topDiv);
 
-                    // Flotante
                     const flotante = document.createElement('span');
                     flotante.className = 'flotante';
                     flotante.textContent = '+' + valor;
@@ -887,19 +869,16 @@
                     let timeoutId = null;
                     let isLongPress = false;
 
-                    // Función para actualizar el contador visual
                     function actualizarContador() {
                         spanContador.textContent = contador;
                     }
 
-                    // Función para mostrar flotante con mensaje
                     function mostrarFlotante(texto, tipo) {
                         flotante.textContent = texto;
                         flotante.className = 'flotante';
                         if (tipo === 'restar') flotante.classList.add('restar');
                         else if (tipo === 'cero') flotante.classList.add('cero');
-                        else flotante.classList.add('mostrar'); // suma normal
-                        // Forzar reflow para reiniciar animación
+                        else flotante.classList.add('mostrar');
                         void flotante.offsetWidth;
                         flotante.classList.add('mostrar');
                         setTimeout(function() {
@@ -907,15 +886,12 @@
                         }, 600);
                     }
 
-                    // Evento inicio de presión (para detectar long press)
                     btn.addEventListener('pointerdown', function(e) {
                         e.preventDefault();
                         isLongPress = false;
                         timeoutId = setTimeout(function() {
                             isLongPress = true;
-                            // INTENTAR RESTAR
                             if (contador > 0) {
-                                // Restar una unidad
                                 contador--;
                                 actualizarContador();
                                 let current = parseInt(input.value) || 0;
@@ -924,18 +900,15 @@
                                 input.value = current;
                                 mostrarFlotante('-' + valor, 'restar');
                             } else {
-                                // No se puede restar, mostrar -0
                                 mostrarFlotante('-0', 'cero');
                             }
                         }, 500);
                     });
 
-                    // Evento fin de presión (click normal)
                     btn.addEventListener('pointerup', function(e) {
                         e.preventDefault();
                         clearTimeout(timeoutId);
                         if (!isLongPress) {
-                            // SUMAR
                             contador++;
                             actualizarContador();
                             let current = parseInt(input.value) || 0;
@@ -972,7 +945,7 @@
         scoreButton.addEventListener('click', openScorePanel);
 
         // ============================================================
-        //  APLICAR PUNTUACIÓN (ASIGNACIÓN DIRECTA POR JUGADOR)
+        //  APLICAR PUNTUACIÓN
         // ============================================================
         applyScoreBtn.addEventListener('click', function() {
             if (gameFinished) {
@@ -980,9 +953,7 @@
                 return;
             }
 
-            // Recoger valores de los inputs
             const inputs = scoreInputs.querySelectorAll('input[type="number"]');
-            // Objeto para almacenar puntos por índice de jugador
             const puntosPorJugador = {};
 
             for (let j = 0; j < inputs.length; j++) {
@@ -992,22 +963,18 @@
                     alert('Los puntos no pueden ser negativos.');
                     return;
                 }
-                // Solo asignamos si no es el ganador
                 if (currentWinner !== idx) {
                     puntosPorJugador[idx] = val;
                 }
-                // Si es el ganador, no se añade (queda 0)
             }
 
-            // Aplicar puntos a cada jugador
+            // Aplicar puntos y guardar historial
             for (let k = 0; k < players.length; k++) {
                 const puntos = puntosPorJugador[k] || 0;
                 players[k].puntos += puntos;
-                // Guardar el total actual en el historial (siempre, para mantener alineación)
                 players[k].historialPuntos.push(players[k].puntos);
             }
 
-            // Guardar historial completo (con ceros para los que no puntuaron)
             const puntosArray = [];
             for (let m = 0; m < players.length; m++) {
                 puntosArray[m] = puntosPorJugador[m] || 0;
@@ -1016,6 +983,7 @@
                 pointsAdded: puntosArray,
                 winner: currentWinner
             });
+            rondaActual++;
 
             closeScorePanel();
             renderGame();
@@ -1059,6 +1027,7 @@
             } else {
                 currentWinner = null;
             }
+            if (rondaActual > 0) rondaActual--;
             renderGame();
             statusMessage.textContent = '↩ Última ronda deshecha.';
             saveState();
@@ -1086,6 +1055,7 @@
             currentWinner = null;
             history = [];
             gameFinished = false;
+            rondaActual = 0;
             renderGame();
             statusMessage.textContent = '🔄 Puntuaciones reseteadas a 0.';
             saveState();
@@ -1104,6 +1074,7 @@
             currentWinner = null;
             history = [];
             gameFinished = false;
+            rondaActual = 0;
             numPlayersSelect.value = '3';
             puntuacionFinalInput.value = '200';
             setupNames();
@@ -1123,7 +1094,7 @@
         if (!loadState()) {
             setupScreen.style.display = 'block';
             gameScreen.style.display = 'none';
-            //v.0.1
+            //v.0.2
         }
 
     })();
