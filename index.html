@@ -127,26 +127,31 @@
             min-width: 100px;
         }
         .table-wrap {
+            width: 100%;
             overflow-x: auto;
             overflow-y: hidden;
             margin: 12px 0;
             -webkit-overflow-scrolling: touch;
             scroll-behavior: smooth;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
         }
         .puntos-table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             font-size: 1rem;
-            min-width: 300px;
             table-layout: fixed;
+            min-width: 400px; /* Para forzar scroll cuando haya muchas columnas */
         }
         .puntos-table th,
         .puntos-table td {
-            padding: 8px 4px;
+            padding: 8px 6px;
             text-align: center;
             border-bottom: 1px solid #e9ecef;
             vertical-align: middle;
             white-space: nowrap;
+            background: #ffffff;
         }
         .puntos-table th {
             background: #f1f3f5;
@@ -156,7 +161,7 @@
             top: 0;
             z-index: 2;
         }
-        /* Columna fija: Jugador */
+        /* Columna fija: Jugador (izquierda) */
         .puntos-table th:first-child,
         .puntos-table td:first-child {
             position: sticky;
@@ -172,7 +177,7 @@
             background: #f1f3f5;
             z-index: 4;
         }
-        /* Columna fija: Ganador */
+        /* Columna fija: Ganador (derecha) */
         .puntos-table th:last-child,
         .puntos-table td:last-child {
             position: sticky;
@@ -426,6 +431,7 @@
             .cartas-container { gap: 4px; }
             .carta-btn { font-size: 1rem; min-width: 38px; min-height: 38px; padding: 4px 6px; }
             .puntos-table { font-size: 0.8rem; }
+            .puntos-table th:first-child, .puntos-table td:first-child { min-width: 50px; max-width: 70px; }
         }
     </style>
 </head>
@@ -433,7 +439,7 @@
 
     <!-- Pie de página con versión y copyright -->
     <div class="footer-info">
-        <span class="version">v.0.2.2</span>
+        <span class="version">v.0.2.3</span>
         <span class="copyright">© 2026 · Todos los derechos reservados</span>
     </div>
 
@@ -632,7 +638,7 @@
         }
 
         // ============================================================
-        //  RENDERIZAR TABLA DE PUNTUACIONES POR RONDAS (TODAS)
+        //  RENDERIZAR TABLA DE PUNTUACIONES POR RONDAS
         // ============================================================
         function renderGame() {
             // Determinar número total de rondas
